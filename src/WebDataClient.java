@@ -6,13 +6,17 @@ public class WebDataClient {
 	/**
 	 * @param args
 	 */
-	public static void start_search(String query, RemoteEndpoint socket) {
+	public static void start_search(String query, RemoteEndpoint twisocket, RemoteEndpoint fbsocket) throws FacebookException {
 		String searchWord="deepSentiment";
 
 		// TODO Auto-generated method stub
-		SearchTweets tweeter = new SearchTweets(query, socket);
-		Thread t = new Thread(tweeter);
-		t.start();
+		SearchTweets tweeter = new SearchTweets(query, twisocket);
+		Thread t1 = new Thread(tweeter);
+		t1.start();
+		
+		SearchFacebook faceboook = new SearchFacebook(query, fbsocket);
+		Thread t2 = new Thread(faceboook);
+		t2.start();
 	}
 
 }
