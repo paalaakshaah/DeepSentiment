@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,38 +18,23 @@ import facebook4j.ResponseList;
 import facebook4j.conf.Configuration;
 import facebook4j.conf.ConfigurationBuilder;
 
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
 
 public class SearchFacebook implements Runnable {
 	
-	String query = "FacebookQuery";
+	String searchWord = "FacebookQuery";
 	Facebook facebook;
+	RemoteEndpoint sess;
+	int total = 1;
+	double [] sentiment = new double[5];
 	
-	public static String diff(String str1, String str2) {
-	    int index = str1.lastIndexOf(str2);
-	    if (index > -1) {
-	      return str1.substring(str2.length());
-	    }
-	    return str1;
-	  }
-	
-	public static String removeUrl(String commentstr)
-    {
-        String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(commentstr);
-        int i = 0;
-        while (m.find()) {
-            commentstr = commentstr.replaceAll(m.group(i),"").trim();
-            i++;
-        }
-        return commentstr;
-    }
-	
-	public SearchFacebook(String s) throws FacebookException {
-		query = s;
+	public SearchFacebook(String query, RemoteEndpoint webs) throws FacebookException {
+		searchWord = query;
+		sess = webs;
 		setAuth();
 	}
-	
+		
 	public void setAuth() throws FacebookException {
 		// Make the configuration builder
 				ConfigurationBuilder confBuilder = new ConfigurationBuilder();
@@ -79,12 +65,12 @@ public class SearchFacebook implements Runnable {
 		
 				// Get facebook posts
 				//String query = "cricket";
-				String results = getFacebookPostes(facebook,query);
+				String results = getFacebookPostes(facebook,searchWord);
 			    
 				//String responce = stringToJson(results);
 				
 				// Create file and write to the file
-				File file = new File("facebook.txt");
+				/*File file = new File("facebook.txt");
 				if (!file.exists())
 				{
 					file.createNewFile();
@@ -94,7 +80,28 @@ public class SearchFacebook implements Runnable {
 					
 					bw.close();
 					System.out.println("Writing complete");
-				}
+				}*/
+				
+				ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(results);
+                if(total > 100)
+                {
+                	total = 1;
+                	for(int i=0; i<5; i++) {
+                		sentiment[i] = 0;
+                	}
+                }
+                for(StanfordCoreNlpDemo.sentiment i : val)
+                {
+                	System.out.println("in tweets" + i.value);
+                	sentiment[i.value]++;
+                	total++;
+                }
+                
+                //System.out.println(Arrays.toString(sentiment));
+                String mess = (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
+                System.out.println(mess);
+                sess.sendString(mess);
+				
 			} catch (FacebookException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,6 +111,7 @@ public class SearchFacebook implements Runnable {
 		}
 		}
 	}
+	
 	public static String getFacebookPostes(Facebook facebook, String query) throws FacebookException {
 		// Get posts for a particular search
 		ResponseList<Post> results =  facebook.getPosts(query);
@@ -123,15 +131,17 @@ public class SearchFacebook implements Runnable {
 		return t1.toString();
 	}
 	
-	public static String stringToJson(String data)
-	{
-		// Create JSON object
-		//System.out.println("data= "+data);
-		//System.out.println("********************");
-		JSONObject jsonObject = JSONObject.fromObject(data);
-		JSONArray message = (JSONArray) jsonObject.get("message");
-		//System.out.println("Message : "+message);
-		return "Done";
-	}
+	public static String removeUrl(String commentstr)
+    {
+        String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(commentstr);
+        int i = 0;
+        while (m.find()) {
+            commentstr = commentstr.replaceAll(m.group(i),"").trim();
+            i++;
+        }
+        return commentstr;
+    }
 
 }
