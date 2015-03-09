@@ -1,0 +1,13 @@
+{
+   "background": {
+   },
+   "browser_action": {
+      "default_popup": "popup.html",
+      "default_title": "Deep Sentiment"
+   },
+   "description": "Get trending sentiments",
+   "manifest_version": 2,
+   "name": "Deep Sentiment",
+   "permissions": [ ],
+   "version": "1.1"
+}
