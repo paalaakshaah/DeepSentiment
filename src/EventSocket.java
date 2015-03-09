@@ -26,12 +26,7 @@ public class EventSocket extends WebSocketAdapter
     {
         super.onWebSocketText(message);
         System.out.println("Received TEXT message: " + message);
-        try {
-			WebDataClient.start_search(message, mysess.getRemote(), mysess.getRemote());
-		} catch (FacebookException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        WebDataClient.start_search(message, mysess.getRemote());
     }
     
     
