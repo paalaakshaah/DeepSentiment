@@ -25,9 +25,10 @@ public class StanfordCoreNlpDemo {
  * @throws ParserConfigurationException */
   public static ArrayList<sentiment> get_sentiment(String t1) throws IOException, ParserConfigurationException {
     // set up optional output files
-    PrintWriter out;
+ //   System.out.println("checking string input: " + t1);
+	 
 
-      out = new PrintWriter(System.out);
+	  PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("bigdata.out")));
 
     PrintWriter xmlOut = null;
 
@@ -59,27 +60,36 @@ public class StanfordCoreNlpDemo {
     if (true) {
       pipeline.xmlPrint(annotation, xmlout);
     }
-  System.out.println("got xml output");
+    System.out.println("got xml output");
     String mystring = xmlout.toString();
     int found = 0;
     String str = "sentence id";
     ArrayList<sentiment> sent_list = new ArrayList<sentiment>();
+    int i1 = 13, i2 = 14, j1 = 32, j2 = 33;
     while(found != -1)
     {
     	found = mystring.indexOf(str, found+1);
+ //   	System.out.println("found value: " + found);
+    	
     	if(found == -1)
     		break;
     	sentiment n = new sentiment();
-    	n.sentence_id = Integer.parseInt(mystring.substring(found+13, found+14));
-    	n.value = Integer.parseInt(mystring.substring(found+32, found+33));
-    	System.out.println("senti : "+n.value);
+    	if(sent_list.size()!=0){
+    	if((sent_list.get(sent_list.size()-1).sentence_id==9)||(sent_list.get(sent_list.size()-1).sentence_id==999))
+    	{i2++;	j1++; j2++;}
+    	}
+    	
+    	n.sentence_id = Integer.parseInt(mystring.substring(found+i1, found+i2));
+    	n.value = Integer.parseInt(mystring.substring(found+j1, found+j2));
+//    	System.out.println("senti : "+n.value);
+    	
     	if(mystring.charAt(found+46)=='N')
     		n.pon = -1;
     	else
     		n.pon = 1;
     	sent_list.add(n);
     }
-    System.out.println("******************");
+ //   System.out.println("******************");
 //    IOUtils.closeIgnoringExceptions(out);
 //    IOUtils.closeIgnoringExceptions(xmlOut);
     return sent_list;

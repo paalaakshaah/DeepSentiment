@@ -2,13 +2,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.xml.parsers.ParserConfigurationException;
+
+
 import facebook4j.Account;
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
@@ -81,8 +83,14 @@ public class SearchFacebook implements Runnable {
 					bw.close();
 					System.out.println("Writing complete");
 				}*/
-				
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchfb.out")));
+				long time1 = System.currentTimeMillis();    
 				ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(results);
+				long time2 = System.currentTimeMillis();
+				out.println("nlp call time"+(time2-time1) + " length: " + results.length());
+                out.flush();
+                
+                
                 if(total > 100)
                 {
                 	total = 1;
@@ -92,20 +100,31 @@ public class SearchFacebook implements Runnable {
                 }
                 for(StanfordCoreNlpDemo.sentiment i : val)
                 {
-                	System.out.println("in fb" + i.value);
+                	//System.out.println("in fb" + i.value);
                 	sentiment[i.value]++;
                 	total++;
+                	String mess = "fb: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
+                    sess.sendString(mess);
+					Thread.sleep(100);
                 }
                 
                 //System.out.println(Arrays.toString(sentiment));
-                String mess = (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
-                System.out.println(mess);
-                sess.sendString(mess);
+                
 				
 			} catch (FacebookException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
+			// TODO Auto-generated catch block
+				System.out.println("in IO exception");
+				
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+            return;
+		} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

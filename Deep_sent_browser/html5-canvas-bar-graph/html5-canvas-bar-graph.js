@@ -20,7 +20,7 @@ function BarGraph(ctx) {
   var startArr;
   var endArr;
   var looping = false;
-		/*
+		
   // Loop method adjusts the height of bar and redraws if neccessary
 	var loop = function () {
 
@@ -50,7 +50,7 @@ function BarGraph(ctx) {
 		setTimeout(loop, that.animationInterval / that.animationSteps);
 	  }
 	};
-		*/
+		
   // Draw method updates the canvas with the current display
 	var draw = function (arr) {
 							
@@ -177,7 +177,7 @@ function BarGraph(ctx) {
   this.yAxisLabelArr = [];
   this.animationInterval = 100;
   this.animationSteps = 10;
-	/*
+	
   // Update method sets the end bar array and starts the animation
 	this.update = function (newArr) {
 
@@ -196,5 +196,5 @@ function BarGraph(ctx) {
 		}
 	  }
 	}; 
-	*/
+	
 }

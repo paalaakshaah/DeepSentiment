@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,10 +15,7 @@ import twitter4j.auth.AccessToken;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 
-/**
- * @author Yusuke Yamamoto - yusuke at mac.com
- * @since Twitter4J 2.1.7
- */
+
 public class SearchTweets implements Runnable{
 	Twitter twitter;
 	String searchWord;
@@ -28,7 +29,12 @@ public class SearchTweets implements Runnable{
 	}
 	
 	public void run() {
-		search(searchWord);
+		try {
+			search(searchWord);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setAuth() {
@@ -42,8 +48,9 @@ public class SearchTweets implements Runnable{
      * Usage: java twitter4j.examples.search.SearchTweets [query]
      *
      * @param args search query
+	 * @throws IOException 
      */
-    public void search(String word) {
+    public void search(String word) throws IOException {
         if (word == null) {
             System.out.println("java twitter4j.examples.search.SearchTweets [query]");
             System.exit(-1);
@@ -51,7 +58,7 @@ public class SearchTweets implements Runnable{
         
         String t = "";
         String t1 = "";
-        
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchtweets.out")));
         //Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(word);
@@ -78,8 +85,13 @@ public class SearchTweets implements Runnable{
                     }
                     t1 = t1.replaceAll("#[A-Za-z]+","");
                     t1 = t1.replaceAll("@[A-Za-z]+","");
-                    System.out.println(t1);
+ //                   System.out.println(t1);
+                    long time1 = System.currentTimeMillis();                    
                     ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(t1);
+                    long time2 = System.currentTimeMillis();
+                    out.println("nlp call time"+(time2-time1) + " length: " + t1.length());
+                    out.flush();
+                    
                     if(total > 100)
                     {
                     	total = 1;
@@ -91,14 +103,14 @@ public class SearchTweets implements Runnable{
                     }
                     for(StanfordCoreNlpDemo.sentiment i : val)
                     {
-                    	System.out.println("in tweets" + i.value);
+                    	//System.out.println("in tweets" + i.value);
                     	sentiment[i.value]++;
                     	total++;
                     }
                     
                     //System.out.println(Arrays.toString(sentiment));
-                    String mess = (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
-                    System.out.println(mess);
+                    String mess = "tw: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
+ //                   System.out.println(mess);
                     sess.sendString(mess);
                 }
             } while((query = result.nextQuery()) != null);

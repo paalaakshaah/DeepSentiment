@@ -1,0 +1,54 @@
+Adding annotator tokenize
+TokenizerAnnotator: No tokenizer type provided. Defaulting to PTBTokenizer.
+Adding annotator ssplit
+Adding annotator pos
+Reading POS tagger model from edu/stanford/nlp/models/pos-tagger/english-left3words/english-left3words-distsim.tagger ... done [1.1 sec].
+Adding annotator parse
+Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ...done [1.1 sec].
+Adding annotator depparse
+Loading depparse model file: edu/stanford/nlp/models/parser/nndep/english_SD.gz ... 
+Adding annotator tokenize
+PreComputed 100000, Elapsed Time: 1.226 (s)
+Initializing dependency parser done [3.8 sec].
+Adding annotator sentiment
+Adding annotator ssplit
+Adding annotator pos
+Adding annotator parse
+Adding annotator depparse
+Adding annotator sentiment
+
+
+
+
+Adding annotator tokenize
+TokenizerAnnotator: No tokenizer type provided. Defaulting to PTBTokenizer.
+Adding annotator ssplit
+Adding annotator pos
+Reading POS tagger model from edu/stanford/nlp/models/pos-tagger/english-left3words/english-left3words-distsim.tagger ... done [1.1 sec].
+Adding annotator parse
+Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ...done [1.2 sec].
+Adding annotator depparse
+Loading depparse model file: edu/stanford/nlp/models/parser/nndep/english_SD.gz ... 
+Adding annotator tokenize
+PreComputed 100000, Elapsed Time: 1.141 (s)
+Initializing dependency parser done [3.6 sec].
+Adding annotator sentiment
+Adding annotator ssplit
+Adding annotator pos
+Adding annotator parse
+Adding annotator depparse
+Adding annotator sentiment
+
+
+Adding annotator tokenize
+TokenizerAnnotator: No tokenizer type provided. Defaulting to PTBTokenizer.
+Adding annotator ssplit
+Adding annotator pos
+Reading POS tagger model from edu/stanford/nlp/models/pos-tagger/english-left3words/english-left3words-distsim.tagger ... done [1.0 sec].
+Adding annotator parse
+Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ...done [1.0 sec].
+Adding annotator depparse
+Loading depparse model file: edu/stanford/nlp/models/parser/nndep/english_SD.gz ... 
+PreComputed 100000, Elapsed Time: 1.978 (s)
+Initializing dependency parser done [4.5 sec].
+Adding annotator sentiment
