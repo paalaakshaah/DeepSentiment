@@ -92,7 +92,7 @@ public class SearchFacebook implements Runnable {
                 }
                 for(StanfordCoreNlpDemo.sentiment i : val)
                 {
-                	System.out.println("in tweets" + i.value);
+                	System.out.println("in fb" + i.value);
                 	sentiment[i.value]++;
                 	total++;
                 }
