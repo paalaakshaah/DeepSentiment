@@ -67,7 +67,7 @@ public class SearchFacebook implements Runnable {
 		
 				// Get facebook posts
 				//String query = "cricket";
-				String results = getFacebookPostes(facebook,searchWord);
+				String results = getFacebookPosts(facebook,searchWord);
 			    
 				//String responce = stringToJson(results);
 				
@@ -131,7 +131,7 @@ public class SearchFacebook implements Runnable {
 		}
 	}
 	
-	public static String getFacebookPostes(Facebook facebook, String query) throws FacebookException {
+	public static String getFacebookPosts(Facebook facebook, String query) throws FacebookException {
 		// Get posts for a particular search
 		ResponseList<Post> results =  facebook.getPosts(query);
 		StringBuffer t1=new StringBuffer();
