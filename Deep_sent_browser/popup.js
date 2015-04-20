@@ -1,10 +1,84 @@
+/*
+	although ammap has methos like getAreaCenterLatitude and getAreaCenterLongitude,
+	they are not suitable in quite a lot of cases as the center of some countries
+	is even outside the country itself (like US, because of Alaska and Hawaii)
+	That's why wehave the coordinates stored here
+*/
+
+var places = [];
+
+var latlong = {};
+/*latlong[0] = {"latitude":47, "longitude":-123};
+latlong[1] = {"latitude":27, "longitude":-81};*/
+
+var count=0;
 var socket = new WebSocket('ws://localhost:8080/events/');
+var map;
+var minBulletSize = 3;
+var maxBulletSize = 70;
+var min = Infinity;
+var max = -Infinity;
+var myPoints = [];
 
 socket.onmessage = function (event) {
   console.log(event.data);
 }
 
-function register() {
+for(var i=0;i<places.length;i++) {
+	//var ran = Math.floor(Math.Random()*4);
+	myPoints.push({"ID" : places[i] , "sentiment" : "0.66"});
+}
+
+// get min and max values
+
+var colorData = ["#ff0000","#ff8800","#ffff00","#88ff88","#00ff00"];
+//var colorData = ["#eea638","#d8854f","#de4c4f","#de4c4f","#a7a737"];
+
+function getColor(myArr) {
+      	return colorData[myArr % 5];
+    }
+
+ // build map
+ 
+ function mymapfunc() {
+  	AmCharts.theme = AmCharts.themes.dark;
+	map = new AmCharts.AmMap();
+  	map.pathToImages = "http://www.amcharts.com/lib/3/images/";
+
+	map.addTitle("Twitter Sentiment Map of the World", 14);
+	//map.addTitle("source: Gapminder", 11);
+	map.areasSettings = {
+		unlistedAreasColor: "#000000",
+		unlistedAreasAlpha: 0.1
+	};
+	map.imagesSettings.balloonText = "<span style='font-size:14px;'><b>[[title]]</b>: [[value]]</span>";
+
+	var dataProvider = {
+		mapVar: AmCharts.maps.worldLow,
+		images: []
+	}
+
+    // create circle for each country
+    for (var i = 0; i < myPoints.length; i++) {
+        var dataItem = myPoints[i];
+        var size = 7;//Math.sqrt(square / (Math.PI * 2));
+        var id = dataItem.code;
+
+        dataProvider.images.push({
+            type: "circle",
+            width: size,
+            height: size,
+            color: getColor(dataItem.sentiment),//dataItem.color,
+            longitude: latlong[dataItem.ID].longitude,
+            latitude: latlong[dataItem.ID].latitude
+        });
+    }
+	map.dataProvider = dataProvider;
+
+	map.write("chartdiv");
+}
+ 
+ function register() {
       function createCanvas(divName) {
       
       var div = document.getElementById(divName);
@@ -90,7 +164,13 @@ function register() {
 socket.onmessage = function (event) {
   console.log(event.data);
   var myArray = event.data.split(" ");
-  for(var i=1; i<myArray.length; i++) { myArray[i] = parseInt(myArray[i]); }
+  for(var i=1; i<myArray.length; i++) { 
+  	myArray[i] = parseInt(myArray[i]); 
+  	latlong[count] = {"latitude":-20 + Math.random()*(50), "longitude":30 + Math.random()*(30)};
+	places.push(count);
+  	myPoints.push({"ID" : places[places.length-1], "sentiment" : myArray[i]});
+  	count++;
+  }
   if(myArray[0]=="fb:"){
     graph.update(myArray);
     console.log("fb_time: " + (tfb - d.getTime()));
@@ -102,7 +182,7 @@ socket.onmessage = function (event) {
     console.log("twit_time" + (ttwi - d.getTime()))
     ttwi = d.getTime();
   }
-    
+  mymapfunc();  
  // document.getElementById("someID").firstChild.nodeValue=myArray[1];
 
 }
@@ -112,3 +192,7 @@ socket.onmessage = function (event) {
 window.onload = function() {
   document.getElementById("register").onclick = register;
 }
+
+ AmCharts.ready(function () {
+ 	mymapfunc();
+ });
