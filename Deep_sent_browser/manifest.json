@@ -5,6 +5,12 @@
       "default_popup": "popup.html",
       "default_title": "Deep Sentiment"
    },
+   "icons": {
+      "16": "new16.png",
+      "48": "new48.png",
+      "64": "new64.png",
+      "128": "new128.png"
+   },
    "description": "Get trending sentiments",
    "manifest_version": 2,
    "name": "Deep Sentiment",
