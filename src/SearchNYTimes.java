@@ -33,7 +33,7 @@ import javax.websocket.RemoteEndpoint;
 //http://api.nytimes.com/svc/community/v2/comments/by-date/
 //http://api.nytimes.com/svc/community/v2/comments/by-date/20101212.json?&offset=1&api-key=cd6479409e9d2849d2c8f0246ab895ea:10:68731810
 //http://api.nytimes.com/svc/community/v2/comments/by-date/20101212.json?api-key=8c5b6144d7eb91d5acc87de2521d449b:8:58236592
-public class nyTimes {
+public class SearchNYTimes {
 
 	static String keyword = "obama";
 	int total = 1;
