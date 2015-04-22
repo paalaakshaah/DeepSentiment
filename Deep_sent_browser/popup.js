@@ -12,6 +12,7 @@ var latlong = {};
 latlong[1] = {"latitude":27, "longitude":-81};*/
 
 var count=0;
+var drawfreq = 0;
 var socket = new WebSocket('ws://localhost:8080/events/');
 var map;
 var minBulletSize = 3;
@@ -78,6 +79,63 @@ function getColor(myArr) {
 	map.write("chartdiv");
 }
  
+ function getlatitude()
+ {
+
+ 	if(count%100<17){ //US
+ 		return 27 + Math.random()*(20);
+ 	} else if(count%100<29) { //Canada
+ 		return 47 + Math.random()*(20);
+ 	} else if(count%100<38) { //SAm1
+ 		return -15 + Math.random()*(15);
+ 	} else if(count%100<44) { //SAm2
+ 		return -45 + Math.random()*(20);
+ 	} else if(count%100<55) { //NAf
+ 		return 8 + Math.random()*(22);
+ 	} else if(count%100<61) { //SAf
+ 		return -30 + Math.random()*(35);
+ 	} else if(count%100<64) { //Russia
+ 		return 45 + Math.random()*(20);
+ 	} else if(count%100<68) { //SAs
+ 		return 23 + Math.random()*(20);
+ 	} else if(count%100<81) { //Europe
+ 		return 45 + Math.random()*(15);
+ 	} else if(count%100<90) { //Alaska
+    return 60 + Math.random()*(10);
+  } else { //Aus
+ 		return -32 + Math.random()*(12);
+ 	}
+ }
+
+ function getlongitude()
+ {
+ 	if(count%100<17){ //US
+ 		return -123 + Math.random()*(40);
+ 	} else if(count%100<29) { //Canada
+ 		return -120 + Math.random()*(60);
+ 	} else if(count%100<38) { //SAm1
+ 		return -75 + Math.random()*(38);
+ 	} else if(count%100<44) { //SAm2
+ 		return -67 + Math.random()*(10);
+ 	} else if(count%100<55) { //NAf
+ 		return -15 + Math.random()*(60);
+ 	} else if(count%100<61) { //SAf
+ 		return 15 + Math.random()*(20);
+ 	} else if(count%100<64) { //Russia
+ 		return 30 + Math.random()*(105);
+ 	} else if(count%100<68) { //SAs
+ 		return 45 + Math.random()*(80);
+ 	} else if(count%100<81) { //Europe
+ 		return 0 + Math.random()*(45);
+ 	} else if(count%100<90) { //Alaska
+    return -164 + Math.random()*(45);
+  } else { //Aus
+ 		return 120 + Math.random()*(30);
+ 	}
+
+ }
+
+
  function register() {
       function createCanvas(divName) {
       
@@ -127,6 +185,8 @@ function getColor(myArr) {
   // Prevent register button from being click again before the registration
   // finishes.
   //document.getElementById("register").disabled = true;
+
+
     var send_data =  senderId ;
 
     if(typeof socket === 'undefined') {
@@ -161,16 +221,25 @@ function getColor(myArr) {
     var tfb = d.getTime();
     var ttwi = d.getTime();
 
+
 socket.onmessage = function (event) {
   console.log(event.data);
   var myArray = event.data.split(" ");
+  mymapfunc();
+  /*if(count>100) {
+  		mymapfunc();
+  		count=0;
+  		places = [];
+  		myPoints = [];
+  	} */
   for(var i=1; i<myArray.length; i++) { 
-  	myArray[i] = parseInt(myArray[i]); 
-  	latlong[count] = {"latitude":-20 + Math.random()*(50), "longitude":30 + Math.random()*(30)};
+  	myArray[i] = parseInt(myArray[i]);
+  	latlong[count] = {"latitude": getlatitude(), "longitude": getlongitude()};
 	places.push(count);
   	myPoints.push({"ID" : places[places.length-1], "sentiment" : myArray[i]});
   	count++;
   }
+
   if(myArray[0]=="fb:"){
     graph.update(myArray);
     console.log("fb_time: " + (tfb - d.getTime()));
@@ -182,7 +251,11 @@ socket.onmessage = function (event) {
     console.log("twit_time" + (ttwi - d.getTime()))
     ttwi = d.getTime();
   }
-  mymapfunc();  
+  /*drawfreq++;
+  if(drawfreq == 10) {mymapfunc();
+  		drawfreq=0;
+  }*/
+    
  // document.getElementById("someID").firstChild.nodeValue=myArray[1];
 
 }
