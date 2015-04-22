@@ -225,13 +225,13 @@ function getColor(myArr) {
 socket.onmessage = function (event) {
   console.log(event.data);
   var myArray = event.data.split(" ");
-  mymapfunc();
-  /*if(count>100) {
+  //mymapfunc();
+  if(count>100) {
   		mymapfunc();
   		count=0;
   		places = [];
   		myPoints = [];
-  	} */
+  	} 
   for(var i=1; i<myArray.length; i++) { 
   	myArray[i] = parseInt(myArray[i]);
   	latlong[count] = {"latitude": getlatitude(), "longitude": getlongitude()};
