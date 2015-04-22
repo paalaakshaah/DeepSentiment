@@ -21,7 +21,12 @@ public class SearchTweets implements Runnable{
 	String searchWord;
 	RemoteEndpoint sess;
 	int total = 1;
+	ArrayList<double[]> mapPoints = new ArrayList<double[]>();
 	double [] sentiment = new double[5];
+	/*
+	double[] usright = {28, 81.6};
+	double[] usleft = {47 , 122};*/
+	
 	public SearchTweets(String query, RemoteEndpoint webs) {
 		searchWord = query;
 		sess = webs;
@@ -39,10 +44,14 @@ public class SearchTweets implements Runnable{
 	
 	public void setAuth() {
 		//setupProperties();
-        AccessToken aToken=new AccessToken("148313150-Udrd8TfTkqWJMxuHaRSFbHlGH50uDxzKFn4eO8dV","rlAMLATbku89QTDHbZDG2ARpsvgSVufK9uvJIkOlgIXoF");
+		 long k1 = System.currentTimeMillis(); 
+	
+        AccessToken aToken=new AccessToken("148313150-TvnyzcwBpu5bokeHgdaIBQme3VYQPGfPREceZqCY","m9RCseEaj14sn0srg5MbbiQB0HTqy5l9AGNXT11b6w34P");
         twitter=new TwitterFactory().getInstance();
-        twitter.setOAuthConsumer("OF74Uvkp4uvZ8Awbywnb8SalP","6bjyvRrvatUQ1ZYM4j0zETfnMsfGgFOx2WP9FlhBtkuUWEqrbl");
+        twitter.setOAuthConsumer("J8hPaid7DL4guQRo5U4xXZVcJ","NzWKkaeuf8fPRzXG8zDS9pXgcNhFSg03RRZBz4LMaXb0f0iFNb");
         twitter.setOAuthAccessToken(aToken);
+        long k2 = System.currentTimeMillis(); 
+        System.out.println("twitter oauth:" + (k2-k1));
 	}
 	/**
      * Usage: java twitter4j.examples.search.SearchTweets [query]
@@ -59,15 +68,31 @@ public class SearchTweets implements Runnable{
         String t = "";
         String t1 = "";
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchtweets.out")));
+        
         //Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(word);
             QueryResult result;
             do {
                 result = twitter.search(query);
+                
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
+                	System.out.println(tweet);
+                	//System.out.println(loc);
+                	//System.out.println(tweet.toString()); 
                     t = (tweet.getText());
+                    System.out.println(tweet.getPlace()	);
+                    
+                    /*GeoLocation loc = tweet.getGeoLocation();
+                    double lat = usleft[1] + Math.random()*(usright[1]-usleft[1]);
+                    double lng = usleft[0] + Math.random()*(usright[0]-usleft[0]);
+                    if(loc != null)
+                    {
+                    	lat = loc.getLatitude();
+                    	lng = loc.getLongitude();
+                    }*/
+                    //System.out.println(loc + " " + loc.getLatitude() + " " + loc.getLongitude());
                     //t1 = removeUrl(t);
                     int find1 = t.indexOf("http");
                     if(find1!=-1){
@@ -85,9 +110,12 @@ public class SearchTweets implements Runnable{
                     }
                     t1 = t1.replaceAll("#[A-Za-z]+","");
                     t1 = t1.replaceAll("@[A-Za-z]+","");
- //                   System.out.println(t1);
+                    
                     long time1 = System.currentTimeMillis();                    
                     ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(t1);
+                    /*double[] mapP = new double[3];
+                    mapP[0] = lat;
+                    mapP[1] = lng;*/
                     long time2 = System.currentTimeMillis();
                     out.println("nlp call time"+(time2-time1) + " length: " + t1.length());
                     out.flush();
@@ -101,17 +129,30 @@ public class SearchTweets implements Runnable{
                     	sentiment[3] = 0;
                     	sentiment[4] = 0;
                     }
+                    System.out.println(t1);
+                    
                     for(StanfordCoreNlpDemo.sentiment i : val)
                     {
                     	//System.out.println("in tweets" + i.value);
                     	sentiment[i.value]++;
                     	total++;
+                    	/*mapP[2] = i.value;
+                    	mapPoints.add(mapP);*/
+                    	System.out.print(i.value + "  ");
                     }
                     
+                    
+                    /*String msg = "twmap: ";
+                    for(double[] point : mapPoints) {
+                    	String str = Double.toString(point[0]) + "," + Double.toString(point[1]) + "," + Double.toString(point[2]) + " ";
+                    	msg = msg.concat(str);
+                    }
+                    sess.sendString(msg);*/
                     //System.out.println(Arrays.toString(sentiment));
                     String mess = "tw: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
  //                   System.out.println(mess);
                     sess.sendString(mess);
+			mapPoints.clear();
                 }
             } while((query = result.nextQuery()) != null);
             System.exit(0);

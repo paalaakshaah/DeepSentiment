@@ -25,11 +25,11 @@ public class StanfordCoreNlpDemo {
  * @throws ParserConfigurationException */
   public static ArrayList<sentiment> get_sentiment(String t1) throws IOException, ParserConfigurationException {
     // set up optional output files
- //   System.out.println("checking string input: " + t1);
-	 
+     
 
 	  PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("bigdata.out")));
-
+	  out.println("checking string input: " + t1);
+		
     PrintWriter xmlOut = null;
 
       xmlOut = new PrintWriter("myxml");
@@ -60,8 +60,10 @@ public class StanfordCoreNlpDemo {
     if (true) {
       pipeline.xmlPrint(annotation, xmlout);
     }
-    System.out.println("got xml output");
+   // System.out.println("got xml output");
     String mystring = xmlout.toString();
+    out.println(mystring);
+    out.flush();
     int found = 0;
     String str = "sentence id";
     ArrayList<sentiment> sent_list = new ArrayList<sentiment>();

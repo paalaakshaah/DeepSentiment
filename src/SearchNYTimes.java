@@ -9,7 +9,8 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.websocket.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import javax.xml.parsers.ParserConfigurationException;
 
 /*TODO
  * 1. GET OWN AUTH ID
@@ -33,14 +34,14 @@ import javax.websocket.RemoteEndpoint;
 //http://api.nytimes.com/svc/community/v2/comments/by-date/
 //http://api.nytimes.com/svc/community/v2/comments/by-date/20101212.json?&offset=1&api-key=cd6479409e9d2849d2c8f0246ab895ea:10:68731810
 //http://api.nytimes.com/svc/community/v2/comments/by-date/20101212.json?api-key=8c5b6144d7eb91d5acc87de2521d449b:8:58236592
-public class SearchNYTimes {
-
+public class SearchNYTimes implements Runnable {
+	double [] sentiment = new double[5];
 	static String keyword = "obama";
 	int total = 1;
 	RemoteEndpoint sess;
-	static String accessKey = "17960b276a2d7dfd60502121092c072c:18:71918448";
+	static String accessKey = "8c5b6144d7eb91d5acc87de2521d449b:8:58236592";
 	
-	public nyTimes(String query, RemoteEndpoint webs) {
+	public SearchNYTimes(String query, RemoteEndpoint webs) {
 		keyword = query;
 		sess = webs;
 	}
@@ -100,11 +101,11 @@ public class SearchNYTimes {
 		return x.replaceAll("https?://\\S+\\s?", "");
 	}
 
-	public static void run() {
+	public void run() {
 
 		
 		InputStream is = null;
-		ArrayList<String> setOfRelevantResults = new ArrayList<String>();
+	
 		Calendar now = Calendar.getInstance();
 		Integer year = now.get(Calendar.YEAR);
 		Integer month = now.get(Calendar.MONTH); // Note: zero based
@@ -138,7 +139,7 @@ public class SearchNYTimes {
 							// ans[j]= removeUrl(ans[j]);
 							
 						//	setOfRelevantResults.add(ans[j]);
-							System.out.println("ans[j]="+ans[j]);
+						//	System.out.println("ans[j]="+ans[j]);
 							
 						    String[] splits = ans[j].split("/");
 						    
@@ -147,7 +148,7 @@ public class SearchNYTimes {
 						    String x = splits[splits.length-1].substring(0, len-5);
 								
 								if(x.contains("obama")) {
-									System.out.println("output ="+x);
+							//		System.out.println("output ="+x);
 									//process the comment and send to NLP
 									String[] ansComments = res.commentSentences;
 									for (int k = 0; k < ansComments.length; k++) {
@@ -159,9 +160,15 @@ public class SearchNYTimes {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 										PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchNYT.out")));
 										long time1 = System.currentTimeMillis();    
-										ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(results);
+										ArrayList<StanfordCoreNlpDemo.sentiment> val = null;
+										try {
+											val = StanfordCoreNlpDemo.get_sentiment(ansComments[k]);
+										} catch (ParserConfigurationException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 										long time2 = System.currentTimeMillis();
-										out.println("nlp call time"+(time2-time1) + " length: " + results.length());
+										out.println("nlp call time"+(time2-time1) + " length: " + ansComments[k].length());
 						                out.flush();
 						                
 						                
@@ -177,9 +184,9 @@ public class SearchNYTimes {
 						                	//System.out.println("in fb" + i.value);
 						                	sentiment[n.value]++;
 						                	total++;
-						                	String mess = "NYT" + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
-						                    sess.sendString(mess);
-											Thread.sleep(100);
+						                	String mess = "NYT:" + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
+						                	sess.sendString(mess);
+											//Thread.sleep(100);
 						                }
 										
 										
@@ -231,6 +238,7 @@ public class SearchNYTimes {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		} finally {
 			try {
 				is.close();

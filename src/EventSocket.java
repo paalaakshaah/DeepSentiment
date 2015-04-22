@@ -3,11 +3,13 @@ import java.io.IOException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
+
 import facebook4j.FacebookException;
 
 public class EventSocket extends WebSocketAdapter
 {
 	Session mysess;
+	
     
     public void onWebSocketConnect(Session sess)
     {
@@ -29,6 +31,7 @@ public class EventSocket extends WebSocketAdapter
         super.onWebSocketText(message);
         System.out.println("Received TEXT message: " + message);
         try {
+        	EventServer.tsearch.streamData(message, mysess.getRemote());
 			WebDataClient.start_search(message, mysess.getRemote());
 		} catch (FacebookException e) {
 			// TODO Auto-generated catch block

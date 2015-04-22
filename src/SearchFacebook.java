@@ -39,6 +39,7 @@ public class SearchFacebook implements Runnable {
 		
 	public void setAuth() throws FacebookException {
 		// Make the configuration builder
+		long k1 = System.currentTimeMillis(); 
 				ConfigurationBuilder confBuilder = new ConfigurationBuilder();
 				confBuilder.setDebugEnabled(true);
 
@@ -59,6 +60,8 @@ public class SearchFacebook implements Runnable {
 		        FacebookFactory ff = new FacebookFactory(configuration);
 		        facebook = ff.getInstance();
 		        facebook.setOAuthAccessToken(facebook.getOAuthAppAccessToken());
+		        long k2 = System.currentTimeMillis(); 
+		        System.out.println("fb oauth:" + (k2-k1));
 	}
 	
 	public void run() {	
@@ -67,8 +70,7 @@ public class SearchFacebook implements Runnable {
 		
 				// Get facebook posts
 				//String query = "cricket";
-				String results = getFacebookPosts(facebook,searchWord);
-			    
+				String results = getFacebookPostes(facebook,searchWord);
 				//String responce = stringToJson(results);
 				
 				// Create file and write to the file
@@ -131,9 +133,10 @@ public class SearchFacebook implements Runnable {
 		}
 	}
 	
-	public static String getFacebookPosts(Facebook facebook, String query) throws FacebookException {
+	public static String getFacebookPostes(Facebook facebook, String query) throws FacebookException {
 		// Get posts for a particular search
 		ResponseList<Post> results =  facebook.getPosts(query);
+		//System.out.println(results);
 		StringBuffer t1=new StringBuffer();
 		String SubStr1 = new String("message='");
 		

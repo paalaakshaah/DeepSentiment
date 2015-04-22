@@ -10,8 +10,11 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class EventServer
 {
+	public static new_tweet_search tsearch = new new_tweet_search();
+	
     public static void main(String[] args)
     {
+    	tsearch.initialize();
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(8080);
@@ -25,7 +28,7 @@ public class EventServer
         
         // Add a websocket to a specific path spec
         ServletHolder holderEvents = new ServletHolder("ws-events", EventServlet.class);
-        context.addServlet(holderEvents, "/events/*");
+        context.addServlet(holderEvents, "/*");
         
 
         try
