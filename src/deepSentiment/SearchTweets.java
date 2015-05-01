@@ -1,3 +1,5 @@
+
+package deepSentiment;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,13 +26,13 @@ public class SearchTweets implements Runnable{
 	ArrayList<double[]> mapPoints = new ArrayList<double[]>();
 	double [] sentiment = new double[5];
 	int count = 0;
-	
+
 	public SearchTweets(String query, RemoteEndpoint webs) {
 		searchWord = query;
 		sess = webs;
 		setAuth();
 	}
-	
+
 	public void run() {
 		try {
 			search(searchWord);
@@ -39,54 +41,54 @@ public class SearchTweets implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setAuth() {
 		//setupProperties();
-		 long k1 = System.currentTimeMillis(); 
-	
+		 long k1 = System.currentTimeMillis();
+
         AccessToken aToken=new AccessToken("148313150-TvnyzcwBpu5bokeHgdaIBQme3VYQPGfPREceZqCY","m9RCseEaj14sn0srg5MbbiQB0HTqy5l9AGNXT11b6w34P");
         twitter=new TwitterFactory().getInstance();
         twitter.setOAuthConsumer("J8hPaid7DL4guQRo5U4xXZVcJ","NzWKkaeuf8fPRzXG8zDS9pXgcNhFSg03RRZBz4LMaXb0f0iFNb");
         twitter.setOAuthAccessToken(aToken);
-        long k2 = System.currentTimeMillis(); 
+        long k2 = System.currentTimeMillis();
         System.out.println("twitter oauth:" + (k2-k1));
 	}
 	/**
      * Usage: java twitter4j.examples.search.SearchTweets [query]
      *
      * @param args search query
-	 * @throws IOException 
+	 * @throws IOException
      */
     public void search(String word) throws IOException {
         if (word == null) {
             System.out.println("java twitter4j.examples.search.SearchTweets [query]");
             System.exit(-1);
         }
-        
+
         String t = "";
         String t1 = "";
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchtweets.out")));
-        
+
         //Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(word);
             QueryResult result;
             do {
                 result = twitter.search(query);
-                
+
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
                 	System.out.println(tweet);
                 	//System.out.println(loc);
-                	//System.out.println(tweet.toString()); 
+                	//System.out.println(tweet.toString());
                     t = (tweet.getText());
                     GeoLocation loc = tweet.getGeoLocation();
                     double lat;
                     double lng;
-                    
+
                     if(loc != null) {
                     	lat = loc.getLatitude();
-                    	lng = loc.getLongitude();                 
+                    	lng = loc.getLongitude();
                     }
 
                     //t1 = removeUrl(t);
@@ -97,7 +99,7 @@ public class SearchTweets implements Runnable{
                     int find2 = t.indexOf(' ', find1);
                     if(find2 == -1)
                     	find2 = t.length()-1;
-                    
+
                     t1 = t.substring(0, find1-1); //+ t.substring(find2, t.length()-1);
                     }
                     else
@@ -106,8 +108,8 @@ public class SearchTweets implements Runnable{
                     }
                     t1 = t1.replaceAll("#[A-Za-z]+","");
                     t1 = t1.replaceAll("@[A-Za-z]+","");
-                    
-                    long time1 = System.currentTimeMillis();                    
+
+                    long time1 = System.currentTimeMillis();
                     ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(t1);
                     /*double[] mapP = new double[3];
                     mapP[0] = lat;
@@ -115,7 +117,7 @@ public class SearchTweets implements Runnable{
                     long time2 = System.currentTimeMillis();
                     out.println("nlp call time"+(time2-time1) + " length: " + t1.length());
                     out.flush();
-                    
+
                     if(total > 100)
                     {
                     	total = 1;
@@ -126,9 +128,9 @@ public class SearchTweets implements Runnable{
                     	sentiment[4] = 0;
                     }
                     System.out.println(t1);
-                    
+
                     String msg = "twmap: ";
-                    
+
                     for(StanfordCoreNlpDemo.sentiment i : val)
                     {
                     	//System.out.println("in tweets" + i.value);
@@ -140,10 +142,10 @@ public class SearchTweets implements Runnable{
                     	msg= msg + lat + " " + lng + " " + i.value + " ";
                     	System.out.print(i.value + "  ");
                     }
-                    
+
                     sess.sendString(msg);
                     //System.out.println(Arrays.toString(sentiment));
-                    String mess = "tw: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
+                    String mess = "tw: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100;
                     //System.out.println(mess);
                     sess.sendString(mess);
                     mapPoints.clear();
@@ -151,7 +153,7 @@ public class SearchTweets implements Runnable{
             } while((query = result.nextQuery()) != null);
             System.exit(0);
         } catch (Exception te) {
-        	
+
             te.printStackTrace();
             System.out.println(t);
             System.out.println(t1);
@@ -161,7 +163,7 @@ public class SearchTweets implements Runnable{
             return;
         }
     }
-       
+
     public String removeUrl(String commentstr)
     {
         String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";

@@ -1,0 +1,47 @@
+Runtime
+PID@Hostname	5299@phani-Inspiron-5520
+Virtual machine arguments	-Xms40m -Xmx384m -Dorg.eclipse.equinox.p2.reconciler.dropins.directory=/usr/share/eclipse/dropins -XX:MaxPermSize=256m 
+System properties	
+Uptime	4 min 20 sec
+Class path	/usr/lib/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.dist.jar
+Library path	/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64
+Boot class path	/usr/lib/jvm/java-8-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-8-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-8-oracle/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-8-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jfr.jar:/usr/lib/jvm/java-8-oracle/jre/classes
+Virtual machine vendor	Oracle Corporation
+Virtual machine name	Java HotSpot(TM) 64-Bit Server VM
+Virtual machine version	25.31-b07
+Memory
+Used heap memory	78,052 kbytes
+Max heap memory	349,696 kbytes
+Committed heap memory	189,440 kbytes
+Used non-heap memory	110,477 kbytes
+Max non-heap memory	0 kbytes
+Committed non-heap memory	117,120 kbytes
+Object pending finalization count	0
+Threading
+TotalStartedThreadCount	55
+Thread count	44
+Peak thread count	44
+Daemon thread count	29
+ClassLoading
+TotalLoadedClassCount	11388
+Loaded class count	11387
+Unloaded class count	1
+Compilation
+Total compilation time	35208
+Compiler name	HotSpot 64-Bit Tiered Compilers
+GarbageCollector
+Collection count in PS MarkSweep	4
+Collection time in PS MarkSweep	0.660 sec
+Collection count in PS Scavenge	18
+Collection time in PS Scavenge	0.175 sec
+OperatingSystem
+Total physical memory size	8,049,124 kbytes
+Free physical memory size	2,154,860 kbytes
+Total swap memory size	8,257,532 kbytes
+Free swap memory size	8,255,900 kbytes
+Committed virtual memory size	6,289,788 kbytes
+Process CPU time	72.160 sec
+Operation system name	Linux
+Operation system version	3.13.0-45-generic
+Operation system architecture	amd64
+Available processors	8

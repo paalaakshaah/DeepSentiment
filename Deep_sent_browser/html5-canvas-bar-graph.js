@@ -84,7 +84,7 @@ function BarGraph(ctx) {
 				
 	  // Calculate dimensions of the bar
 	  barWidth = graphAreaWidth / numOfBars - that.margin * 2;
-	  maxBarHeight = graphAreaHeight - 25;
+	  maxBarHeight = 100;
 				
 	  // Determine the largest value in the bar array
 	  var largestValue = 0;

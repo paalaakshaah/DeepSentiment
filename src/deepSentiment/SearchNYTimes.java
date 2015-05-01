@@ -1,3 +1,5 @@
+
+package deepSentiment;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,12 +25,12 @@ import javax.xml.parsers.ParserConfigurationException;
  class Result {
 	String[] commentSentences;
 	String[] urls;
-	
+
 	public Result(String[] a, String[] b) {
 		this.urls = a;
 		this.commentSentences = b;
 	}
-	
+
 }
 
 //http://api.nytimes.com/svc/community/v2/comments/by-date/
@@ -37,15 +39,15 @@ import javax.xml.parsers.ParserConfigurationException;
 public class SearchNYTimes implements Runnable {
 
 	static String keyword = "obama";
-	
+
 	RemoteEndpoint sess;
 	static String accessKey = "65117e92644a014b739dd7a1909dc720:4:70127886";//"8c5b6144d7eb91d5acc87de2521d449b:8:58236592";
-	
+
 	public SearchNYTimes(String query, RemoteEndpoint webs) {
 		keyword = query;
 		sess = webs;
 	}
-	
+
 	public static String makeURL(String date) {
 		// check about offset
 		return "http://api.nytimes.com/svc/community/v2/comments/by-date/"+date+".json?api-key="+accessKey;
@@ -71,7 +73,7 @@ public class SearchNYTimes implements Runnable {
 		}
 		// System.out.println("came inside function"+x);
 		String res1[] = x.split("(?<=[.!?])\\s* ");
-		
+
 		////////////////////////////////////////////////////////
 		final Matcher matcher2 = Pattern.compile("commentBody.*commentTitle")
 				.matcher(x1);
@@ -90,7 +92,7 @@ public class SearchNYTimes implements Runnable {
 		}
 		// System.out.println("came inside function"+x);
 		String[] res2 = x.split("(?<=[.!?])\\s* ");
-		
+
 		return new Result(res1, res2);
 
 	}
@@ -103,9 +105,9 @@ public class SearchNYTimes implements Runnable {
 
 	public void run() {
 
-		
+
 		InputStream is = null;
-	
+
 		Calendar now = Calendar.getInstance();
 		Integer year = now.get(Calendar.YEAR);
 		Integer month = now.get(Calendar.MONTH); // Note: zero based
@@ -137,29 +139,29 @@ public class SearchNYTimes implements Runnable {
 					   // System.out.println("came here"+ans[0]);
 						for (int j = 0; j < ans.length; j++) {
 							// ans[j]= removeUrl(ans[j]);
-							
+
 						//	setOfRelevantResults.add(ans[j]);
 						//	System.out.println("ans[j]="+ans[j]);
-							
+
 						    String[] splits = ans[j].split("/");
-						    
+
 							int len = splits[splits.length-1].length();
 							//get the last bit of string
 						    String x = splits[splits.length-1].substring(0, len-5);
-								
+
 								if(x.contains("obama")) {
 							//		System.out.println("output ="+x);
 									//process the comment and send to NLP
 									String[] ansComments = res.commentSentences;
 									for (int k = 0; k < ansComments.length; k++) {
-										
+
 										ansComments[k] = removeUrlAndAhref(ansComments[k]);
 										System.out.println("sentence ="+ansComments[k]);
-										
+
 										// send for NLP processing
 //////////////////////////////////////////////////////////////////////////////////////////////////
 										PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchNYT.out")));
-										long time1 = System.currentTimeMillis();    
+										long time1 = System.currentTimeMillis();
 										ArrayList<StanfordCoreNlpDemo.sentiment> val = null;
 										try {
 											val = StanfordCoreNlpDemo.get_sentiment(ansComments[k]);
@@ -170,8 +172,8 @@ public class SearchNYTimes implements Runnable {
 										long time2 = System.currentTimeMillis();
 										out.println("nlp call time"+(time2-time1) + " length: " + ansComments[k].length());
 						                out.flush();
-						                
-						                
+
+
 						                double [] sentiment  = new double[5];
 						                for(StanfordCoreNlpDemo.sentiment n : val)
 						                {
@@ -183,15 +185,15 @@ public class SearchNYTimes implements Runnable {
 				                			message_sender.send(sending_values, sess);
 											//Thread.sleep(100);
 						                }
-										
-										
+
+
 									}
-									
+
 								}
 						}
-						
-						
-	
+
+
+
 					}
 				}
 			/*	for (int j = 0; j < setOfRelevantResults.size(); j++) {

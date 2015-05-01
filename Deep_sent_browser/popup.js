@@ -78,63 +78,6 @@ function getColor(myArr) {
 
 	map.write("chartdiv");
 }
- 
- function getlatitude()
- {
-
- 	if(count%100<17){ //US
- 		return 27 + Math.random()*(20);
- 	} else if(count%100<29) { //Canada
- 		return 47 + Math.random()*(20);
- 	} else if(count%100<38) { //SAm1
- 		return -15 + Math.random()*(15);
- 	} else if(count%100<44) { //SAm2
- 		return -45 + Math.random()*(20);
- 	} else if(count%100<55) { //NAf
- 		return 8 + Math.random()*(22);
- 	} else if(count%100<61) { //SAf
- 		return -30 + Math.random()*(35);
- 	} else if(count%100<64) { //Russia
- 		return 45 + Math.random()*(20);
- 	} else if(count%100<68) { //SAs
- 		return 23 + Math.random()*(20);
- 	} else if(count%100<81) { //Europe
- 		return 45 + Math.random()*(15);
- 	} else if(count%100<90) { //Alaska
-    return 60 + Math.random()*(10);
-  } else { //Aus
- 		return -32 + Math.random()*(12);
- 	}
- }
-
- function getlongitude()
- {
- 	if(count%100<17){ //US
- 		return -123 + Math.random()*(40);
- 	} else if(count%100<29) { //Canada
- 		return -120 + Math.random()*(60);
- 	} else if(count%100<38) { //SAm1
- 		return -75 + Math.random()*(38);
- 	} else if(count%100<44) { //SAm2
- 		return -67 + Math.random()*(10);
- 	} else if(count%100<55) { //NAf
- 		return -15 + Math.random()*(60);
- 	} else if(count%100<61) { //SAf
- 		return 15 + Math.random()*(20);
- 	} else if(count%100<64) { //Russia
- 		return 30 + Math.random()*(105);
- 	} else if(count%100<68) { //SAs
- 		return 45 + Math.random()*(80);
- 	} else if(count%100<81) { //Europe
- 		return 0 + Math.random()*(45);
- 	} else if(count%100<90) { //Alaska
-    return -164 + Math.random()*(45);
-  } else { //Aus
- 		return 120 + Math.random()*(30);
- 	}
-
- }
-
 
  function register() {
       function createCanvas(divName) {
@@ -149,18 +92,6 @@ function getColor(myArr) {
       return ctx;
     }
     
-   // var ctx = createCanvas("graphDiv1");
-    var c = document.getElementById("graphDiv1");
-    var ctx = c.getContext("2d");
-    
-    var graph = new BarGraph(ctx);
-    graph.maxValue = 30;
-    graph.margin = 10;
-    graph.width = 450;
-    graph.height = 150;
-    graph.colors = ["#49a0d8", "#d353a0", "#ffc527", "#df4c27", "#df4c27"];
-    graph.xAxisLabelArr = ["Extreme-Ve", "-Ve", "Neutral", "+Ve", "Extreme+Ve"];
-    graph.yAxisLabelArr = ["twitter"];
 
    // var ctx2 = createCanvas("graphDiv2");
     var c2 = document.getElementById("graphDiv2");
@@ -169,10 +100,9 @@ function getColor(myArr) {
     var graph2 = new BarGraph(ctx2);
     graph2.maxValue = 30;
     graph2.margin = 10;
-    graph.width = 450;
-    graph.height = 150;
+    graph2.height = 350;
     graph2.colors = ["#49a0d8", "#d353a0", "#ffc527", "#df4c27", "#df4c27"];
-    graph2.xAxisLabelArr = ["Extreme-Ve", "-Ve", "Neutral", "+Ve", "Extreme+Ve"];
+    graph2.xAxisLabelArr = ["", "Ex-Ve", "-Ve", "Neutral", "+Ve", "Ex+Ve"];
     graph2.yAxisLabelArr = ["Facebook"];
     //setInterval(function () {
     //  graph.update([Math.random() * 30, Math.random() * 30, Math.random() * 30, Math.random() * 30, Math.random() * 30]);
@@ -220,37 +150,41 @@ function getColor(myArr) {
     var d = new Date();
     var tfb = d.getTime();
     var ttwi = d.getTime();
-
+    var single_graph_Values;
+    var single_graph_count = 0;
 
 socket.onmessage = function (event) {
   console.log(event.data);
   var myArray = event.data.split(" ");
   //mymapfunc();
-  if(count>100) {
+  if(myArray[0]=="twmap:") {
+    for(var i=1; i<myArray.length; i=i+3) {
+      latlong[count] = {"latitude": myArray[i], "longitude": myArray[i+1]};
+      places.push(count);  
+      myPoints.push({"ID" : places[places.length-1], "sentiment" : myArray[i+2]});
+      count++;
+    }
+    
+    
+    if(count>100) {
   		mymapfunc();
   		count=0;
   		places = [];
   		myPoints = [];
   	} 
-  for(var i=1; i<myArray.length; i++) { 
+
+  } else {
+    for(var i=1; i<myArray.length; i++) { 
   	myArray[i] = parseInt(myArray[i]);
-  	latlong[count] = {"latitude": getlatitude(), "longitude": getlongitude()};
-	places.push(count);
-  	myPoints.push({"ID" : places[places.length-1], "sentiment" : myArray[i]});
-  	count++;
   }
 
-  if(myArray[0]=="fb:"){
-    graph.update(myArray);
-    console.log("fb_time: " + (tfb - d.getTime()));
-    tfb = d.getTime();
-  }
 
   if(myArray[0]=="tw:"){
     graph2.update(myArray);
     console.log("twit_time" + (ttwi - d.getTime()))
     ttwi = d.getTime();
   }
+}
   /*drawfreq++;
   if(drawfreq == 10) {mymapfunc();
   		drawfreq=0;

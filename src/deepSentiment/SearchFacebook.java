@@ -1,3 +1,5 @@
+
+package deepSentiment;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,37 +26,37 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 
 public class SearchFacebook implements Runnable {
-	
+
 	String searchWord = "FacebookQuery";
 	Facebook facebook;
 	RemoteEndpoint sess;
 	int total = 1;
-	
-	
+
+
 	public SearchFacebook(String query, RemoteEndpoint webs) throws FacebookException {
 		searchWord = query;
 		sess = webs;
 		setAuth();
 	}
-		
+
 	public void setAuth() throws FacebookException {
 		// Make the configuration builder
-		long k1 = System.currentTimeMillis(); 
+		long k1 = System.currentTimeMillis();
 				ConfigurationBuilder confBuilder = new ConfigurationBuilder();
 				confBuilder.setDebugEnabled(true);
 
 				// Set application id, secret key and access token
-		       
+
 				confBuilder.setOAuthAppId("347058365489290");
 		        confBuilder.setOAuthAppSecret("0a1c3ce16578f26693eb7a5d36d38a44");
-				
+
 				/* old
 				 * confBuilder.setOAuthAppId("611319842300889");
 		        confBuilder.setOAuthAppSecret("23fe3a8d413591cc6ff3009ce9c51d36");
 		        */
-		        
+
 		        //confBuilder.setOAuthAccessToken("kjdbfhewk");
-		        
+
 		        // Set permission
 		        confBuilder.setOAuthPermissions("email,publish_stream, id, name, first_name, last_name, generic");
 		        confBuilder.setUseSSL(true);
@@ -67,19 +69,19 @@ public class SearchFacebook implements Runnable {
 		        FacebookFactory ff = new FacebookFactory(configuration);
 		        facebook = ff.getInstance();
 		        facebook.setOAuthAccessToken(facebook.getOAuthAppAccessToken());
-		        long k2 = System.currentTimeMillis(); 
+		        long k2 = System.currentTimeMillis();
 		        System.out.println("fb oauth:" + (k2-k1));
 	}
-	
-	public void run() {	
+
+	public void run() {
 		while(true) {
 			try {
-		
+
 				// Get facebook posts
 				//String query = "cricket";
 				String results = getFacebookPostes(facebook,searchWord);
 				//String responce = stringToJson(results);
-				
+
 				// Create file and write to the file
 				/*File file = new File("facebook.txt");
 				if (!file.exists())
@@ -88,18 +90,18 @@ public class SearchFacebook implements Runnable {
 					FileWriter fw = new FileWriter(file.getAbsoluteFile());
 					BufferedWriter bw = new BufferedWriter(fw);
 					bw.write(results);
-					
+
 					bw.close();
 					System.out.println("Writing complete");
 				}*/
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchfb.out")));
-				long time1 = System.currentTimeMillis();    
+				long time1 = System.currentTimeMillis();
 				ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(results);
 				long time2 = System.currentTimeMillis();
 				out.println("nlp call time"+(time2-time1) + " length: " + results.length());
                 out.flush();
-                
-                
+
+
                 double [] sentiment = new double[5];
                 for(StanfordCoreNlpDemo.sentiment i : val)
                 {
@@ -110,10 +112,10 @@ public class SearchFacebook implements Runnable {
         			message_sender.send(sending_values, sess);
 					Thread.sleep(100);
                 }
-                
+
                 //System.out.println(Arrays.toString(sentiment));
-                
-				
+
+
 			} catch (FacebookException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -122,7 +124,7 @@ public class SearchFacebook implements Runnable {
 			} catch (IOException e) {
 			// TODO Auto-generated catch block
 				System.out.println("in IO exception");
-				
+
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
             return;
@@ -135,27 +137,27 @@ public class SearchFacebook implements Runnable {
 		}
 		}
 	}
-	
+
 	public static String getFacebookPostes(Facebook facebook, String query) throws FacebookException {
 		// Get posts for a particular search
 		ResponseList<Post> results =  facebook.getPosts(query);
 		//System.out.println(results);
 		StringBuffer t1=new StringBuffer();
 		String SubStr1 = new String("message='");
-		
+
 		for (int i = 0; i < results.size(); i++) {
 			String temps = results.get(i).toString();
-			
+
 			String temp3 = temps.substring(temps.indexOf(SubStr1));
 			//System.out.println(temp3);
 			temp3 = temp3.substring(9,temp3.indexOf("',"));
-			temp3 = removeUrl(temp3);			
-			t1.append(temp3);	
+			temp3 = removeUrl(temp3);
+			t1.append(temp3);
 		}
 		//System.out.println(t1);
 		return t1.toString();
 	}
-	
+
 	public static String removeUrl(String commentstr)
     {
         String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";

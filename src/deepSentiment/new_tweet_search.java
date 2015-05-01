@@ -1,3 +1,5 @@
+
+package deepSentiment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,14 +44,14 @@ public class new_tweet_search{
 	        {
 		        String [] track = new String[queries.size()];
 		        queries.toArray(track);
-		       
+
 		        query.track(track);
 		        String[] lang = {"en"};
 		        query.language(lang);
 		        twitterStream.filter(query);
 	        }
 	        //twitterStream.sample();
-	        
+
     	}
     	catch (Exception e) {
     		System.out.println(e.getMessage());
@@ -65,20 +67,20 @@ public class new_tweet_search{
                 .setOAuthAccessToken(ACCESS_TOKEN)
                 .setOAuthAccessTokenSecret(ACCESS_TOKEN_SECRET)
                 .setJSONStoreEnabled(true);
-        
+
         twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
 
         try{
-        	StatusListener listener;   
+        	StatusListener listener;
             listener = new StatusListener(){
                 public void onStatus(Status status) {
                 	String t1 = "";
                 	String t = status.getText();
                 	GeoLocation loc = status.getGeoLocation();
-                    
+
                     if(loc != null) {
                     	lat = loc.getLatitude();
-                    	lng = loc.getLongitude();                 
+                    	lng = loc.getLongitude();
                     }
                 	System.out.println(t);
                 	int find1 = t.indexOf("http");
@@ -88,7 +90,7 @@ public class new_tweet_search{
 	                    int find2 = t.indexOf(' ', find1);
 	                    if(find2 == -1)
 	                    	find2 = t.length()-1;
-	                    
+
 	                    t1 = t.substring(0, find1-1); //+ t.substring(find2, t.length()-1);
                     }
                     else
@@ -98,7 +100,7 @@ public class new_tweet_search{
                     t1 = t1.replaceAll("#[A-Za-z]+","");
                     t1 = t1.replaceAll("@[A-Za-z]+","");
                 	//long userID = status.getId();
-                	
+
                 	/*GeoLocation loc = tweet.getGeoLocation();
                     double lat = usleft[1] + Math.random()*(usright[1]-usleft[1]);
                     double lng = usleft[0] + Math.random()*(usright[0]-usleft[0]);
@@ -107,13 +109,13 @@ public class new_tweet_search{
                     	lat = loc.getLatitude();
                     	lng = loc.getLongitude();
                     }*/
-                	
+
                 	ArrayList<StanfordCoreNlpDemo.sentiment> val = null;
                 	try {
 						val = StanfordCoreNlpDemo.get_sentiment(t1);
-					
-					
-                	
+
+
+
                 	String msg = "twmap: ";
                 	double [] sentiment = new double[5];
                 	for(StanfordCoreNlpDemo.sentiment i : val)
@@ -128,12 +130,12 @@ public class new_tweet_search{
                     	/*mapP[2] = i.value;
                     	mapPoints.add(mapP);*/
                     }
-                	
+
                 	if(val != null)
                 	{
 	                	for(String a : queries)
 	                	{
-	                		
+
 	                		if(org.apache.commons.lang3.StringUtils.containsIgnoreCase(t1, a))
 	                		{
 	                			RemoteEndpoint rp = socket_list.get(a);
@@ -148,20 +150,20 @@ public class new_tweet_search{
 	                				socket_list.remove(a);
 	                			}
 	                		}
-	                			
+
 	                	}
                 	}
                 	} catch (IOException e) {
 						// TODO Auto-generated catch block
-                		
+
                 		e.printStackTrace();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						
-						
+
+
 						e.printStackTrace();
-					}	
-                   
+					}
+
                 }
                 public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
                 public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
@@ -170,23 +172,23 @@ public class new_tweet_search{
                 }
     			public void onScrubGeo(long arg0, long arg1) {
     				// TODO Auto-generated method stub
-    				
+
     			}
     			public void onStallWarning(StallWarning arg0) {
     				// TODO Auto-generated method stub
-    				
+
     			}
-                
+
             };
             twitterStream.addListener(listener);
         }catch(Exception e){
         	System.out.println(e.getMessage());
     		twitterStream.shutdown();
         }
-        
-		
+
+
 	}
-	
+
 	double getlatitude() {
         if(count%100<17){ //US
             return 27 + Math.random()*(20);

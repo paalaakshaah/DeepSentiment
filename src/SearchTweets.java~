@@ -23,8 +23,6 @@ public class SearchTweets implements Runnable{
 	int total = 1;
 	ArrayList<double[]> mapPoints = new ArrayList<double[]>();
 	double [] sentiment = new double[5];
-	int count = 0;
-	
 	public SearchTweets(String query, RemoteEndpoint webs) {
 		searchWord = query;
 		sess = webs;
@@ -44,9 +42,9 @@ public class SearchTweets implements Runnable{
 		//setupProperties();
 		 long k1 = System.currentTimeMillis(); 
 	
-        AccessToken aToken=new AccessToken("148313150-TvnyzcwBpu5bokeHgdaIBQme3VYQPGfPREceZqCY","m9RCseEaj14sn0srg5MbbiQB0HTqy5l9AGNXT11b6w34P");
+        AccessToken aToken=new AccessToken("148313150-Udrd8TfTkqWJMxuHaRSFbHlGH50uDxzKFn4eO8dV","rlAMLATbku89QTDHbZDG2ARpsvgSVufK9uvJIkOlgIXoF");
         twitter=new TwitterFactory().getInstance();
-        twitter.setOAuthConsumer("J8hPaid7DL4guQRo5U4xXZVcJ","NzWKkaeuf8fPRzXG8zDS9pXgcNhFSg03RRZBz4LMaXb0f0iFNb");
+        twitter.setOAuthConsumer("OF74Uvkp4uvZ8Awbywnb8SalP","6bjyvRrvatUQ1ZYM4j0zETfnMsfGgFOx2WP9FlhBtkuUWEqrbl");
         twitter.setOAuthAccessToken(aToken);
         long k2 = System.currentTimeMillis(); 
         System.out.println("twitter oauth:" + (k2-k1));
@@ -66,29 +64,19 @@ public class SearchTweets implements Runnable{
         String t = "";
         String t1 = "";
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("searchtweets.out")));
-        
         //Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(word);
             QueryResult result;
             do {
                 result = twitter.search(query);
-                
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                	System.out.println(tweet);
-                	//System.out.println(loc);
-                	//System.out.println(tweet.toString()); 
                     t = (tweet.getText());
                     GeoLocation loc = tweet.getGeoLocation();
-                    double lat;
-                    double lng;
-                    
-                    if(loc != null) {
-                    	lat = loc.getLatitude();
-                    	lng = loc.getLongitude();                 
-                    }
-
+                    double lat = loc.getLatitude();
+                    double lng = loc.getLongitude();
+                    //System.out.println(loc + " " + loc.getLatitude() + " " + loc.getLongitude());
                     //t1 = removeUrl(t);
                     int find1 = t.indexOf("http");
                     if(find1!=-1){
@@ -109,9 +97,9 @@ public class SearchTweets implements Runnable{
                     
                     long time1 = System.currentTimeMillis();                    
                     ArrayList<StanfordCoreNlpDemo.sentiment> val = StanfordCoreNlpDemo.get_sentiment(t1);
-                    /*double[] mapP = new double[3];
+                    double[] mapP = new double[3];
                     mapP[0] = lat;
-                    mapP[1] = lng;*/
+                    mapP[1] = lng;
                     long time2 = System.currentTimeMillis();
                     out.println("nlp call time"+(time2-time1) + " length: " + t1.length());
                     out.flush();
@@ -124,29 +112,31 @@ public class SearchTweets implements Runnable{
                     	sentiment[2] = 0;
                     	sentiment[3] = 0;
                     	sentiment[4] = 0;
+                    	mapPoints.clear();
                     }
                     System.out.println(t1);
-                    
-                    String msg = "twmap: ";
                     
                     for(StanfordCoreNlpDemo.sentiment i : val)
                     {
                     	//System.out.println("in tweets" + i.value);
                     	sentiment[i.value]++;
                     	total++;
-                    	lat = getlatitude();
-                        lng = getlongitude();
-                        count++;
-                    	msg= msg + lat + " " + lng + " " + i.value + " ";
+                    	mapP[2] = i.value;
+                    	mapPoints.add(mapP);
                     	System.out.print(i.value + "  ");
                     }
                     
+                    
+                    String msg = "twmap: ";
+                    for(double[] point : mapPoints) {
+                    	String str = Double.toString(point[0]) + "," + Double.toString(point[1]) + "," + Double.toString(point[2]) + " ";
+                    	msg = msg.concat(str);
+                    }
                     sess.sendString(msg);
                     //System.out.println(Arrays.toString(sentiment));
                     String mess = "tw: " + (sentiment[0]/total)*100 + " " + (sentiment[1]/total)*100 + " " + (sentiment[2]/total)*100 + " " + (sentiment[3]/total)*100 + " " + (sentiment[4]/total)*100; 
-                    //System.out.println(mess);
+ //                   System.out.println(mess);
                     sess.sendString(mess);
-                    mapPoints.clear();
                 }
             } while((query = result.nextQuery()) != null);
             System.exit(0);
@@ -174,60 +164,5 @@ public class SearchTweets implements Runnable{
         }
         return commentstr;
     }
-
-    double getlatitude() {
-        if(count%100<17){ //US
-            return 27 + Math.random()*(20);
-        } else if(count%100<29) { //Canada
-            return 47 + Math.random()*(20);
-        } else if(count%100<38) { //SAm1
-            return -15 + Math.random()*(15);
-        } else if(count%100<44) { //SAm2
-            return -45 + Math.random()*(20);
-        } else if(count%100<55) { //NAf
-            return 8 + Math.random()*(22);
-        } else if(count%100<61) { //SAf
-            return -30 + Math.random()*(35);
-        } else if(count%100<64) { //Russia
-            return 45 + Math.random()*(20);
-        } else if(count%100<68) { //SAs
-            return 23 + Math.random()*(20);
-        } else if(count%100<81) { //Europe
-            return 45 + Math.random()*(15);
-        } else if(count%100<90) { //Alaska
-            return 60 + Math.random()*(10);
-        } else if(count%100<92) { //Greenland
-            return 70 + Math.random()*(15);
-        } else { //Aus
-            return -32 + Math.random()*(12);
-        }
-    }
-
-    double getlongitude() {
-        if(count%100<17){ //US
-            return -123 + Math.random()*(40);
-        } else if(count%100<29) { //Canada
-            return -120 + Math.random()*(60);
-        } else if(count%100<38) { //SAm1
-            return -75 + Math.random()*(38);
-        } else if(count%100<44) { //SAm2
-            return -67 + Math.random()*(10);
-        } else if(count%100<55) { //NAf
-            return -15 + Math.random()*(60);
-        } else if(count%100<61) { //SAf
-            return 15 + Math.random()*(20);
-        } else if(count%100<64) { //Russia
-            return 30 + Math.random()*(105);
-        } else if(count%100<68) { //SAs
-            return 45 + Math.random()*(80);
-        } else if(count%100<81) { //Europe
-            return 0 + Math.random()*(45);
-        } else if(count%100<90) { //Alaska
-            return -164 + Math.random()*(45);
-        } else if(count%100<92) { //Greenland
-            return -30 + Math.random()*(10);
-        } else { //Aus
-            return 120 + Math.random()*(30);
-        }
-    }
+	
 }
